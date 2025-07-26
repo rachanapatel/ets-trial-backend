@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import ShiftViewSet, PositionsCreateView, PositionsDetailView, EmployeesCreateView, EmployeesDetailView, TeamListView
+from .views import ShiftViewSet, PositionsCreateView, PositionsDetailView, EmployeesCreateView, EmployeesDetailView, TeamListView, NewCompanyCreateView
 
 # Create a router and register our ViewSets with it.
 router = DefaultRouter()
@@ -15,4 +15,5 @@ urlpatterns = [
     path('team/employees', EmployeesCreateView.as_view(), name='employees'),
     path('team/employees/<int:pk>', EmployeesDetailView.as_view(), name='employees-detail'),
     path('team', TeamListView.as_view(), name='team'),
+    path('signup/', NewCompanyCreateView.as_view(), name='team'),
 ]

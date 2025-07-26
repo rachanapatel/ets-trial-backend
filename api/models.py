@@ -24,7 +24,7 @@ class Employee(models.Model):
     contact = models.EmailField(max_length=100, blank=True, default='')
     is_manager = models.BooleanField(default=False)
 
-    position = models.ForeignKey(Position, related_name='employees', on_delete=models.PROTECT, null=True) #SWITCH back to null=False
+    position = models.ForeignKey(Position, related_name='employees', on_delete=models.PROTECT) 
     company = models.ForeignKey(Company, related_name='employees', on_delete=models.CASCADE) 
 
     def is_manager(self):
@@ -42,4 +42,4 @@ class Shift(models.Model):
     recurring = models.BooleanField(default=False)
 # deleting a position deletes associated shifts BUT deleting an employee just sets the employee to null (bc its optional)
     employee = models.ForeignKey(Employee, related_name='shifts', on_delete=models.SET_NULL, null=True, blank=True)
-    position = models.ForeignKey(Position, related_name='shifts', on_delete=models.CASCADE, null=True) #SWITCH BACK
+    position = models.ForeignKey(Position, related_name='shifts', on_delete=models.CASCADE) 

@@ -1,5 +1,6 @@
 from django.shortcuts import render
-from api.serializers import ShiftSerializer, PositionSerializer, EmployeeSerializer, CreateCompanySerializer, CreateManagerSerializer
+from api.serializers import ShiftSerializer, PositionSerializer, EmployeeSerializer, CreateCompanySerializer, CreateManagerSerializer, CreateNewCompanyWithManagerSerializer
+from api.serializers import ManagerSerializer, CompanySerializer
 from rest_framework import viewsets, generics, status
 from rest_framework.response import Response
 from api.models import Shift, Position, Employee, Company
@@ -29,36 +30,41 @@ class TeamListView(generics.ListAPIView):
     queryset = Employee.objects.all()
     serializer_class = EmployeeSerializer
 
-# class NewCompanyCreateView(generics.CreateAPIView):
-#     queryset = CreateCompanySerializer.objects.all()
-#     serializer_class = CreateCompanySerializer  
+class NewCompanyCreateView(generics.CreateAPIView, generics.ListAPIView):
+    queryset = Company.objects.all()
+    serializer_class = CreateNewCompanyWithManagerSerializer  
 
-#     def perform_create(self, company_serializer):
+    def perform_create(self, company_serializer):
 
-#         manager_data = {
-#             'name': self.request.data.get('manager_name'),
-#             'username': self.request.data.get('manager_username'),
-#             'password': self.request.data.get('manager_password'),
-#             'is_manager': True
-#         }
+        manager_data = {
+            'name': self.request.data.get('manager_name'),
+            'username': self.request.data.get('manager_username'),
+            'password': self.request.data.get('manager_password'),
+            'is_manager': True
+        }
 
-#         manager_serializer = CreateManagerSerializer(data=manager_data)
-#         if manager_serializer.is_valid():
-#             manager = manager_serializer.save()
+        manager_serializer = CreateManagerSerializer(data=manager_data)
+        if not manager_serializer.is_valid():
+            return Response(manager_serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
+            
 
-#             company_data = {
-#             'name': self.request.data.get('company_name'),
-#             'manager': manager
-#             }
+        company_data = {
+        'name': self.request.data.get('company_name'),
+        'manager': None
+        }
 
-#             company_serializer = CreateCompanySerializer(data=company_data)
-#             if company_serializer.is_valid():
-#                 company_serializer.save()
+        company_serializer = CreateCompanySerializer(data=company_data)
+        if not company_serializer.is_valid():
+            return Response(company_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+        manager = manager_serializer.save()
+        company = company_serializer.save(manager=manager_data)
+        # manager.company = company
+        # manager.save()
+        # manager = manager_serializer.save(company=company_data)
+        total_manager_serializer = ManagerSerializer(manager)
+        total_company_serializer = CompanySerializer(company)
 
-#                 return Response(
-#                     {**company_serializer.data,
-#                     'manager': manager_serializer.data}, status=status.HTTP_201_CREATED)
-#             else:
-#                 return Response(company_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-#         else:
-#             return Response(manager_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(
+            {**total_company_serializer.data,
+            'manager': total_manager_serializer.data}, status=status.HTTP_201_CREATED)

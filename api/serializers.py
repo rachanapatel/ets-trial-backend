@@ -20,8 +20,36 @@ class CreateCompanySerializer(serializers.ModelSerializer):
 class CreateManagerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Employee
-        fields = ['name', 'username', 'is_manager']
+        fields = ['name', 'username', 'password', 'is_manager']
 
+class PlainManagerSerializer(serializers.ModelSerializer):
+    # company = CompanySerializer
+
+    class Meta:
+        model = Employee
+        fields = ['id', 'name', 'is_manager', 'username', 'password','company']
+
+class CompanySerializer(serializers.ModelSerializer):
+    manager = PlainManagerSerializer
+    class Meta:
+        model = Company
+        fields = ['id', 'name', 'manager']
+
+class ManagerSerializer(serializers.ModelSerializer):
+    company = CompanySerializer
+
+    class Meta:
+        model = Employee
+        fields = ['id', 'name', 'is_manager', 'username', 'password','company']
+
+
+class CreateNewCompanyWithManagerSerializer(serializers.Serializer):
+    name = serializers.CharField(max_length=100)
+    manager = CreateManagerSerializer()
+
+class UserLoginSerializer(serializers.Serializer):
+    username = serializers.CharField(max_length=20)
+    password = serializers.CharField(max_length=20)
 
 class ShiftSerializer(serializers.ModelSerializer):
     class Meta:
