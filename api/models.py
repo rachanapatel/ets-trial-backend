@@ -8,7 +8,7 @@ class Company(models.Model):
     name = models.CharField(max_length=100)
 
     # manager = models.CharField(max_length=100, blank=True, default='')
-    manager = models.OneToOneField('Employee', related_name='manager', on_delete=models.CASCADE, limit_choices_to={'is_manager': True}) 
+    manager = models.OneToOneField('Employee', related_name='manager', on_delete=models.CASCADE, limit_choices_to={'is_manager': True}, null=True) 
 
 
 class Position(models.Model):

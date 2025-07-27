@@ -20,7 +20,8 @@ class CreateCompanySerializer(serializers.ModelSerializer):
 class CreateManagerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Employee
-        fields = ['name', 'username', 'password', 'is_manager']
+        # fields = ['name', 'username', 'password', 'is_manager']
+        fields = '__all__'
 
 class PlainManagerSerializer(serializers.ModelSerializer):
     # company = CompanySerializer
