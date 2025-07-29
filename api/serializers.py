@@ -1,47 +1,60 @@
 from rest_framework import serializers
 from api.models import Company, Shift, Employee, Position
 
-# class CompanySerializer(serializers.Serializer):
-#     id = serializers.IntegerField(read_only=True)
-#     title = serializers.CharField(required=False, allow_blank=True, max_length=100)
-#     code = serializers.CharField(style={'base_template': 'textarea.html'})
-#     linenos = serializers.BooleanField(required=False)
 
-#     name = models.CharField(max_length=100)
-#     manager = models.CharField(max_length=100, blank=True, default='')
-#     employees = models.
-#     positions  
 
-class CreateCompanySerializer(serializers.ModelSerializer):
+class CreateCompanySerializer(serializers.Serializer):
+    name = serializers.CharField(max_length=100)
+    manager_name = serializers.CharField(max_length=100)
+    manager_username = serializers.CharField(max_length=20)
+    manager_password = serializers.CharField(max_length=20, required=False, allow_blank=True, default='')
+    # class Meta:
+    #     model = Company
+    #     fields = ['name']
+
+class CreatePositionSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Company
-        fields = ['name']
+        model = Position
+        fields = ['title']
 
 class CreateManagerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Employee
-        # fields = ['name', 'username', 'password', 'is_manager']
-        fields = '__all__'
+        fields = ['name', 'username', 'password']
+
+
+class PositionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Position
+        fields = ['id', 'title']
 
 class PlainManagerSerializer(serializers.ModelSerializer):
-    # company = CompanySerializer
+    position = PositionSerializer
+    # is_manager = serializers.SerializerMethodField()
+    is_manager = serializers.SerializerMethodField()
 
     class Meta:
         model = Employee
-        fields = ['id', 'name', 'is_manager', 'username', 'password','company']
+        fields = ['id', 'name', 'username', 'password', 'contact', 'position', 'is_manager']
+    
+    def is_manager(self, obj):
+        return obj.is_manager()
+
 
 class CompanySerializer(serializers.ModelSerializer):
-    manager = PlainManagerSerializer
+    employees = PlainManagerSerializer
+  
     class Meta:
         model = Company
-        fields = ['id', 'name', 'manager']
+        fields = ['id', 'name', 'employees']
 
 class ManagerSerializer(serializers.ModelSerializer):
     company = CompanySerializer
+    position = PositionSerializer
 
     class Meta:
         model = Employee
-        fields = ['id', 'name', 'is_manager', 'username', 'password','company']
+        fields = ['id', 'name', 'username', 'password', 'contact', 'position','company']
 
 
 class CreateNewCompanyWithManagerSerializer(serializers.Serializer):
@@ -57,11 +70,6 @@ class ShiftSerializer(serializers.ModelSerializer):
         model = Shift
         fields = '__all__'
         
-class PositionSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Position
-        fields = '__all__'
-
 class EmployeeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Employee
