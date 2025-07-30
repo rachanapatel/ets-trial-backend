@@ -7,12 +7,19 @@ from api.models import Shift, Position, Employee, Company
 # Create your views here.
 
 
-
+import logging
+from rest_framework.exceptions import APIException
 from rest_framework.views import APIView
+
+logger = logging.getLogger(__name__)
 
 class SimpleView(APIView):
     def get(self, request):
-        return Response({"message": "This works!"})
+        try:
+            return Response({"message": "Hello, world!"})
+        except APIException as e:
+            logger.error(f"Error in GET request: {str(e)}")
+            raise
 
 
 class ShiftViewSet(viewsets.ModelViewSet):
