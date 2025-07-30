@@ -7,6 +7,9 @@ from .views import ShiftViewSet, PositionsCreateView, PositionsDetailView, Emplo
 router = DefaultRouter()
 router.register(r'dash', ShiftViewSet, basename='shifts')
 
+from .views import SimpleView
+
+
 # The API URLs are now determined automatically by the router.
 urlpatterns = [
     path('', include(router.urls)),
@@ -16,4 +19,5 @@ urlpatterns = [
     path('team/employees/<int:pk>', EmployeesDetailView.as_view(), name='employees-detail'),
     path('team', TeamListView.as_view(), name='team'),
     path('signup/', NewCompanyCreateView.as_view(), name='team'),
+    path('simple/', SimpleView.as_view(), name='simple_view'),
 ]

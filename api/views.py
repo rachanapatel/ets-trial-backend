@@ -6,6 +6,15 @@ from rest_framework.response import Response
 from api.models import Shift, Position, Employee, Company
 # Create your views here.
 
+
+
+from rest_framework.views import APIView
+
+class SimpleView(APIView):
+    def get(self, request):
+        return Response({"message": "This works!"})
+
+
 class ShiftViewSet(viewsets.ModelViewSet):
     queryset = Shift.objects.all()
     serializer_class = ShiftSerializer
