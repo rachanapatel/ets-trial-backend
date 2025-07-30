@@ -24,7 +24,26 @@ class SimpleView(APIView):
             # Log any exception that happens
             logger.error(f"Error in GET request: {str(e)}")
             raise APIException(str(e))
+    def post(self, request):
+        try:
+            # Log incoming POST request details
+            logger.info(f"POST request received: {request.method} {request.path} from {request.META.get('REMOTE_ADDR')}")
+            
+            # Check if the expected data is present
+            if not request.data.get("name"):
+                logger.warning("Missing 'name' field in POST data.")
+                # If the 'name' field is missing, raise a 400 Bad Request
+                return Response({"error": "Missing 'name' field"}, status=status.HTTP_400_BAD_REQUEST)
 
+            # If the data is valid, process and respond
+            name = request.data["name"]
+            logger.info(f"Received name: {name}")
+            return Response({"message": f"Hello, {name}!"})
+
+        except Exception as e:
+            # Log any exception that happens
+            logger.error(f"Error in POST request: {str(e)}")
+            raise APIException(str(e))
 
 class ShiftViewSet(viewsets.ModelViewSet):
     queryset = Shift.objects.all()
