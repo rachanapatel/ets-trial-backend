@@ -16,10 +16,14 @@ logger = logging.getLogger(__name__)
 class SimpleView(APIView):
     def get(self, request):
         try:
+            # Log incoming request details
+            logger.info(f"Request received: {request.method} {request.path} from {request.META.get('REMOTE_ADDR')}")
+            # Normal response
             return Response({"message": "Hello, world!"})
-        except APIException as e:
+        except Exception as e:
+            # Log any exception that happens
             logger.error(f"Error in GET request: {str(e)}")
-            raise
+            raise APIException(str(e))
 
 
 class ShiftViewSet(viewsets.ModelViewSet):
