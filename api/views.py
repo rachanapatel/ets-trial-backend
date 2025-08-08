@@ -7,44 +7,6 @@ from api.models import Shift, Position, Employee, Company
 # Create your views here.
 
 
-import logging
-from rest_framework.exceptions import APIException
-from rest_framework.views import APIView
-
-logger = logging.getLogger(__name__)
-
-class SimpleView(APIView):
-    def get(self, request):
-        try:
-            # Log incoming request details
-            logger.info(f"Request received: {request.method} {request.path} from {request.META.get('REMOTE_ADDR')}")
-            # Normal response
-            return Response({"message": "Hello, world!"})
-        except Exception as e:
-            # Log any exception that happens
-            logger.error(f"Error in GET request: {str(e)}")
-            raise APIException(str(e))
-    def post(self, request):
-        try:
-            # Log incoming POST request details
-            logger.info(f"POST request received: {request.method} {request.path} from {request.META.get('REMOTE_ADDR')}")
-            
-            # Check if the expected data is present
-            if not request.data.get("name"):
-                logger.warning("Missing 'name' field in POST data.")
-                # If the 'name' field is missing, raise a 400 Bad Request
-                return Response({"error": "Missing 'name' field"}, status=status.HTTP_400_BAD_REQUEST)
-
-            # If the data is valid, process and respond
-            name = request.data["name"]
-            logger.info(f"Received name: {name}")
-            return Response({"message": f"Hello, {name}!"})
-
-        except Exception as e:
-            # Log any exception that happens
-            logger.error(f"Error in POST request: {str(e)}")
-            raise APIException(str(e))
-
 class ShiftViewSet(viewsets.ModelViewSet):
     queryset = Shift.objects.all()
     serializer_class = ShiftSerializer
@@ -170,3 +132,43 @@ class NewCompanyCreateView(generics.CreateAPIView, generics.ListAPIView):
                          "employee": second_response_serializer.data, 
                          "position": third_response_serializer.data},
                          status=201)
+    
+
+
+import logging
+from rest_framework.exceptions import APIException
+from rest_framework.views import APIView
+
+logger = logging.getLogger(__name__)
+
+class SimpleView(APIView):
+    def get(self, request):
+        try:
+            # Log incoming request details
+            logger.info(f"Request received: {request.method} {request.path} from {request.META.get('REMOTE_ADDR')}")
+            # Normal response
+            return Response({"message": "Hello, world!"})
+        except Exception as e:
+            # Log any exception that happens
+            logger.error(f"Error in GET request: {str(e)}")
+            raise APIException(str(e))
+    def post(self, request):
+        try:
+            # Log incoming POST request details
+            logger.info(f"POST request received: {request.method} {request.path} from {request.META.get('REMOTE_ADDR')}")
+            
+            # Check if the expected data is present
+            if not request.data.get("name"):
+                logger.warning("Missing 'name' field in POST data.")
+                # If the 'name' field is missing, raise a 400 Bad Request
+                return Response({"error": "Missing 'name' field"}, status=status.HTTP_400_BAD_REQUEST)
+
+            # If the data is valid, process and respond
+            name = request.data["name"]
+            logger.info(f"Received name: {name}")
+            return Response({"message": f"Hello, {name}!"})
+
+        except Exception as e:
+            # Log any exception that happens
+            logger.error(f"Error in POST request: {str(e)}")
+            raise APIException(str(e))
