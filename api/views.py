@@ -1,19 +1,34 @@
 from django.shortcuts import render
 from api.serializers import ShiftSerializer, PositionSerializer, EmployeeSerializer, CreateCompanySerializer, CreateManagerSerializer, CreateNewCompanyWithManagerSerializer
-from api.serializers import ManagerSerializer, CompanySerializer, PositionSerializer, CreatePositionSerializer, PlainManagerSerializer
+from api.serializers import ManagerSerializer, CompanySerializer, PositionSerializer, CreatePositionSerializer, PlainManagerSerializer, ReadManagerSerializer
 from rest_framework import viewsets, generics, status
 from rest_framework.response import Response
 from api.models import Shift, Position, Employee, Company
-# Create your views here.
+from rest_framework.decorators import api_view
+
 
 
 class ShiftViewSet(viewsets.ModelViewSet):
     queryset = Shift.objects.all()
     serializer_class = ShiftSerializer
 
+# class PositionsListView(generics.ListCreateAPIView):
+#     queryset = Position.objects.all()
+#     serializer_class = PositionSerializer 
+class PositionsListCreateView(generics.ListCreateAPIView):
+    serializer_class = PositionSerializer
+    def get_queryset(self):
+        company_id = self.request.headers.get('X-Company-ID')
+        if company_id:
+            return Position.objects.filter(company_id=company_id)
+        return Position.objects.none()
+
 class PositionsCreateView(generics.CreateAPIView):
     queryset = Position.objects.all()
-    serializer_class = PositionSerializer    
+    serializer_class = PositionSerializer 
+    # def perform_create(self, serializer):
+    #     company = self.request.employee.company  
+    #     serializer.save(company=company)       
 
 class PositionsDetailView(generics.DestroyAPIView, generics.UpdateAPIView):
     queryset = Position.objects.all()
@@ -31,85 +46,17 @@ class TeamListView(generics.ListAPIView):
     queryset = Employee.objects.all()
     serializer_class = EmployeeSerializer
 
-# class NewCompanyCreateView(generics.CreateAPIView, generics.ListAPIView):
-#     queryset = Company.objects.all()
-#     serializer_class = CreateNewCompanyWithManagerSerializer  
-
-#     # def get_serializer_class(self):
-#     #     if self.request.method == 'POST':
-#     #         return CreateNewCompanyWithManagerSerializer
-#     #     return CompanySerializer    
-    
-    
-#     def perform_create(self, company_serializer):
-
-#         manager_data = {
-#             'name': self.request.data.get('manager_name'),
-#             'username': self.request.data.get('manager_username'),
-#             'password': self.request.data.get('manager_password'),
-#             'is_manager': True
-#         }
-
-#         manager_serializer = CreateManagerSerializer(data=manager_data)
-#         if not manager_serializer.is_valid():
-#             return Response(manager_serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
-            
-
-#         company_data = {
-#         'name': self.request.data.get('company_name'),
-#         'manager': None
-#         }
-
-#         company_serializer = CreateCompanySerializer(data=company_data)
-        
-#         if not company_serializer.is_valid():
-#             return Response(company_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-#         company = company_serializer.save()
-#         # company = company_serializer.save(manager=manager_data)
-#         total_company_serializer = CompanySerializer(company)
-
-#         position_data = {
-#         'title': "Owner/Manager",
-#         'company' : total_company_serializer.data["id"]
-#         }
-#         # manager_position = Position(title="Owner/Manager", company=)
-#         position_of_manager = CreatePositionSerializer(data=position_data)
-
-
-#         # manager.company = company
-#         # manager.save()
-#         # manager = manager_serializer.save(company=company_data)
-
-#         manager = manager_serializer.save(position=position_of_manager)
-#         total_manager_serializer = ManagerSerializer(manager)
-        
-
-#         return Response(
-#             {**total_company_serializer.data,
-#             'manager': total_manager_serializer.data}, status=status.HTTP_201_CREATED)
-    
     
 class NewCompanyCreateView(generics.CreateAPIView, generics.ListAPIView):
     # queryset = Company.objects.all()
     queryset = Company.objects.none() 
     serializer_class = CreateCompanySerializer 
     
-    
     def create(self, request, *args, **kwargs):
-        # # Use the default creation logic
-        # response = super().create(request, *args, **kwargs)
-
-        # # Use a different serializer for the output
-        # article = self.get_object()
-        # output_serializer = ArticleReadSerializer(article)
-        # return Response(output_serializer.data, status=response.status_code)
-
-
         # Step 1: Validate incoming data
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         company_name = serializer.validated_data['name']
-        # manager_data = serializer.validated_data['company_manager']
         manager_name = serializer.validated_data['manager_name']
         manager_username = serializer.validated_data['manager_username']
         manager_password = serializer.validated_data.get('manager_password', '')
@@ -133,42 +80,30 @@ class NewCompanyCreateView(generics.CreateAPIView, generics.ListAPIView):
                          "position": third_response_serializer.data},
                          status=201)
     
+@api_view(['POST'])
+def login_view(request):
+    username = request.data.get('username')
+    password = request.data.get('password')
+
+    print(f"Login attempt: {username=} {password=}")
+
+    if not username or not password:
+        return Response({"detail": "Username and password are required."}, status=400)
+
+    try:
+        user = Employee.objects.get(username=username)
+        print(f"Found user: {user.username=} {user.password=}")
 
 
-import logging
-from rest_framework.exceptions import APIException
-from rest_framework.views import APIView
+        if user.password == password:  
+            serializer = ReadManagerSerializer(user)
+            return Response(serializer.data, status=200)
 
-logger = logging.getLogger(__name__)
+        return Response({"detail": "Incorrect password."}, status=401)
 
-class SimpleView(APIView):
-    def get(self, request):
-        try:
-            # Log incoming request details
-            logger.info(f"Request received: {request.method} {request.path} from {request.META.get('REMOTE_ADDR')}")
-            # Normal response
-            return Response({"message": "Hello, world!"})
-        except Exception as e:
-            # Log any exception that happens
-            logger.error(f"Error in GET request: {str(e)}")
-            raise APIException(str(e))
-    def post(self, request):
-        try:
-            # Log incoming POST request details
-            logger.info(f"POST request received: {request.method} {request.path} from {request.META.get('REMOTE_ADDR')}")
-            
-            # Check if the expected data is present
-            if not request.data.get("name"):
-                logger.warning("Missing 'name' field in POST data.")
-                # If the 'name' field is missing, raise a 400 Bad Request
-                return Response({"error": "Missing 'name' field"}, status=status.HTTP_400_BAD_REQUEST)
-
-            # If the data is valid, process and respond
-            name = request.data["name"]
-            logger.info(f"Received name: {name}")
-            return Response({"message": f"Hello, {name}!"})
-
-        except Exception as e:
-            # Log any exception that happens
-            logger.error(f"Error in POST request: {str(e)}")
-            raise APIException(str(e))
+    except Employee.DoesNotExist:
+        return Response({"detail": "User not found."}, status=401)
+    
+    except Exception as e:
+        print("Unexpected error:", str(e))
+        return Response({"detail": "Server error"}, status=500)

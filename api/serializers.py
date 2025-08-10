@@ -26,7 +26,10 @@ class CreateManagerSerializer(serializers.ModelSerializer):
 class PositionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Position
-        fields = ['id', 'title']
+        fields = ['id', 'title', 'company']
+        # extra_kwargs = {
+        #     'company': {'write_only': True},
+        # }
 
 class PlainManagerSerializer(serializers.ModelSerializer):
     position = PositionSerializer
@@ -71,6 +74,14 @@ class ShiftSerializer(serializers.ModelSerializer):
         fields = '__all__'
         
 class EmployeeSerializer(serializers.ModelSerializer):
+    position = PositionSerializer(read_only=True) 
+
     class Meta:
         model = Employee
-        fields = '__all__'
+        fields = ['id', 'name', 'contact', 'position', 'company']
+
+
+class ReadManagerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Employee
+        fields = ['id', 'name', 'username', 'position', 'company']
