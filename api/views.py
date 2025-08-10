@@ -9,8 +9,14 @@ from rest_framework.decorators import api_view
 
 
 class ShiftViewSet(viewsets.ModelViewSet):
-    queryset = Shift.objects.all()
+    # queryset = Shift.objects.all()
     serializer_class = ShiftSerializer
+    
+    def get_queryset(self):
+        company_id = self.request.headers.get('X-Company-ID')
+        if company_id:
+            return Shift.objects.filter(position__company_id=company_id)
+        return Shift.objects.none()    
 
 # class PositionsListView(generics.ListCreateAPIView):
 #     queryset = Position.objects.all()
@@ -37,6 +43,15 @@ class PositionsDetailView(generics.DestroyAPIView, generics.UpdateAPIView):
 class EmployeesCreateView(generics.CreateAPIView):
     queryset = Employee.objects.all()
     serializer_class = EmployeeSerializer    
+
+
+class EmployeesListCreateView(generics.ListCreateAPIView):
+    serializer_class = EmployeeSerializer
+    def get_queryset(self):
+        company_id = self.request.headers.get('X-Company-ID')
+        if company_id:
+            return Employee.objects.filter(company_id=company_id)
+        return Employee.objects.none()
 
 class EmployeesDetailView(generics.DestroyAPIView, generics.UpdateAPIView):
     queryset = Employee.objects.all()

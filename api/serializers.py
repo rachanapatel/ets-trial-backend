@@ -74,7 +74,9 @@ class ShiftSerializer(serializers.ModelSerializer):
         fields = '__all__'
         
 class EmployeeSerializer(serializers.ModelSerializer):
-    position = PositionSerializer(read_only=True) 
+    # position = PositionSerializer(read_only=True) 
+    position = serializers.PrimaryKeyRelatedField(queryset=Position.objects.all())
+
 
     class Meta:
         model = Employee
