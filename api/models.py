@@ -24,12 +24,9 @@ class Employee(models.Model):
     username = models.CharField(max_length=20)
     password = models.CharField(max_length=20, blank=True, default='')
     contact = models.EmailField(max_length=100, blank=True, default='')
-    # is_manager = models.BooleanField(default=False)
-
     position = models.ForeignKey(Position, related_name='employees', on_delete=models.PROTECT) 
     company = models.ForeignKey(Company, related_name='employees', on_delete=models.CASCADE) 
     
-
     def is_manager(self):
         return self.position.title == "Manager"
     

@@ -8,9 +8,6 @@ class CreateCompanySerializer(serializers.Serializer):
     manager_name = serializers.CharField(max_length=100)
     manager_username = serializers.CharField(max_length=20)
     manager_password = serializers.CharField(max_length=20, required=False, allow_blank=True, default='')
-    # class Meta:
-    #     model = Company
-    #     fields = ['name']
 
 class CreatePositionSerializer(serializers.ModelSerializer):
     class Meta:
@@ -27,13 +24,9 @@ class PositionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Position
         fields = ['id', 'title', 'company']
-        # extra_kwargs = {
-        #     'company': {'write_only': True},
-        # }
 
 class PlainManagerSerializer(serializers.ModelSerializer):
     position = PositionSerializer
-    # is_manager = serializers.SerializerMethodField()
     is_manager = serializers.SerializerMethodField()
 
     class Meta:
@@ -72,16 +65,20 @@ class ShiftSerializer(serializers.ModelSerializer):
     class Meta:
         model = Shift
         fields = '__all__'
-        
-class EmployeeSerializer(serializers.ModelSerializer):
-    # position = PositionSerializer(read_only=True) 
-    position = serializers.PrimaryKeyRelatedField(queryset=Position.objects.all())
 
+class EmployeeSerializer(serializers.ModelSerializer):
+    position = PositionSerializer(read_only=True) 
+    position_id = serializers.PrimaryKeyRelatedField(
+        queryset=Position.objects.all(), source='position', write_only=True)
+    company = serializers.PrimaryKeyRelatedField(read_only=True)
 
     class Meta:
         model = Employee
-        fields = ['id', 'name', 'contact', 'position', 'company']
-
+        fields = ['id', 'name', 'contact', 'position', 'position_id', 'company']
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        data['username'] = instance.username
+        return data
 
 class ReadManagerSerializer(serializers.ModelSerializer):
     class Meta:

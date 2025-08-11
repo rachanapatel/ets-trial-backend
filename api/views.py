@@ -18,9 +18,6 @@ class ShiftViewSet(viewsets.ModelViewSet):
             return Shift.objects.filter(position__company_id=company_id)
         return Shift.objects.none()    
 
-# class PositionsListView(generics.ListCreateAPIView):
-#     queryset = Position.objects.all()
-#     serializer_class = PositionSerializer 
 class PositionsListCreateView(generics.ListCreateAPIView):
     serializer_class = PositionSerializer
     def get_queryset(self):
@@ -28,15 +25,13 @@ class PositionsListCreateView(generics.ListCreateAPIView):
         if company_id:
             return Position.objects.filter(company_id=company_id)
         return Position.objects.none()
+    
 
 class PositionsCreateView(generics.CreateAPIView):
     queryset = Position.objects.all()
-    serializer_class = PositionSerializer 
-    # def perform_create(self, serializer):
-    #     company = self.request.employee.company  
-    #     serializer.save(company=company)       
+    serializer_class = PositionSerializer    
 
-class PositionsDetailView(generics.DestroyAPIView, generics.UpdateAPIView):
+class PositionsDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Position.objects.all()
     serializer_class = PositionSerializer  
 
@@ -44,6 +39,16 @@ class EmployeesCreateView(generics.CreateAPIView):
     queryset = Employee.objects.all()
     serializer_class = EmployeeSerializer    
 
+def generate_username(employee_name):
+    base_username = ''.join(employee_name.split()).lower()  # Combine the name into a username
+    if Employee.objects.filter(username=base_username).exists():  # Check for uniqueness
+        counter = 1
+        new_username = f"{base_username}{counter}"
+        while Employee.objects.filter(username=new_username).exists():  # Ensure uniqueness
+            counter += 1
+            new_username = f"{base_username}{counter}"
+        return new_username
+    return base_username
 
 class EmployeesListCreateView(generics.ListCreateAPIView):
     serializer_class = EmployeeSerializer
@@ -52,10 +57,26 @@ class EmployeesListCreateView(generics.ListCreateAPIView):
         if company_id:
             return Employee.objects.filter(company_id=company_id)
         return Employee.objects.none()
+    def perform_create(self, serializer):
+        company_id = self.request.headers.get('X-Company-ID')
+        if company_id:
+            company = Company.objects.get(id=company_id)
 
-class EmployeesDetailView(generics.DestroyAPIView, generics.UpdateAPIView):
-    queryset = Employee.objects.all()
+        employee_name = serializer.validated_data['name']
+        username = generate_username(employee_name)
+        password = username
+        serializer.save(username=username, company=company)     
+        employee = serializer.save(username=username, password=password)
+        employee.save()   
+
+
+class EmployeesDetailView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = EmployeeSerializer    
+    def get_queryset(self):
+        company_id = self.request.headers.get('X-Company-ID')
+        if company_id:
+            return Employee.objects.filter(company_id=company_id)
+        return Employee.objects.none()
 
 class TeamListView(generics.ListAPIView):
     queryset = Employee.objects.all()
@@ -111,8 +132,13 @@ def login_view(request):
 
 
         if user.password == password:  
+            position_title = user.position.title  
             serializer = ReadManagerSerializer(user)
-            return Response(serializer.data, status=200)
+            return Response({
+                **serializer.data,
+                "is_manager": position_title == "Manager",  
+                "position": position_title 
+            }, status=200)
 
         return Response({"detail": "Incorrect password."}, status=401)
 
@@ -122,3 +148,4 @@ def login_view(request):
     except Exception as e:
         print("Unexpected error:", str(e))
         return Response({"detail": "Server error"}, status=500)
+     
