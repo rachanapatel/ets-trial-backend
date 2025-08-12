@@ -40,11 +40,11 @@ class EmployeesCreateView(generics.CreateAPIView):
     serializer_class = EmployeeSerializer    
 
 def generate_username(employee_name):
-    base_username = ''.join(employee_name.split()).lower()  # Combine the name into a username
-    if Employee.objects.filter(username=base_username).exists():  # Check for uniqueness
+    base_username = ''.join(employee_name.split()).lower()  
+    if Employee.objects.filter(username=base_username).exists(): 
         counter = 1
         new_username = f"{base_username}{counter}"
-        while Employee.objects.filter(username=new_username).exists():  # Ensure uniqueness
+        while Employee.objects.filter(username=new_username).exists(): 
             counter += 1
             new_username = f"{base_username}{counter}"
         return new_username
@@ -89,7 +89,6 @@ class NewCompanyCreateView(generics.CreateAPIView, generics.ListAPIView):
     serializer_class = CreateCompanySerializer 
     
     def create(self, request, *args, **kwargs):
-        # Step 1: Validate incoming data
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         company_name = serializer.validated_data['name']
@@ -97,7 +96,6 @@ class NewCompanyCreateView(generics.CreateAPIView, generics.ListAPIView):
         manager_username = serializer.validated_data['manager_username']
         manager_password = serializer.validated_data.get('manager_password', '')
 
-        # Step 2: Create related objects
         company = Company.objects.create(name=company_name)
         position = Position.objects.create(title='Manager', company=company)  
         manager = Employee.objects.create(name=manager_name, 
@@ -106,7 +104,6 @@ class NewCompanyCreateView(generics.CreateAPIView, generics.ListAPIView):
                                           company=company,
                                           position=position)
 
-        # Step 3: Return full nested response
         first_response_serializer = CompanySerializer(company)
         second_response_serializer = PlainManagerSerializer(manager)
         third_response_serializer = PositionSerializer(position)

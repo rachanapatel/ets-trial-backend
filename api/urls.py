@@ -23,5 +23,4 @@ urlpatterns = [
     path('team/', TeamListView.as_view(), name='team'),
     path('signup/', NewCompanyCreateView.as_view(), name='team'),
     path('login/', login_view),
-    # path('simple/', SimpleView.as_view(), name='simple_view'),
 ]
