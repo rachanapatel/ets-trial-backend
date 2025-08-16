@@ -1,0 +1,842 @@
+openapi: 3.0.3
+info:
+  title: ''
+  version: 0.0.0
+paths:
+  /api/schema/:
+    get:
+      operationId: api_schema_retrieve
+      description: |-
+        OpenApi3 schema for this API. Format can be selected via content negotiation.
+
+        - YAML: application/vnd.oai.openapi
+        - JSON: application/vnd.oai.openapi+json
+      parameters:
+      - in: query
+        name: format
+        schema:
+          type: string
+          enum:
+          - json
+          - yaml
+      - in: query
+        name: lang
+        schema:
+          type: string
+          enum:
+          - af
+          - ar
+          - ar-dz
+          - ast
+          - az
+          - be
+          - bg
+          - bn
+          - br
+          - bs
+          - ca
+          - ckb
+          - cs
+          - cy
+          - da
+          - de
+          - dsb
+          - el
+          - en
+          - en-au
+          - en-gb
+          - eo
+          - es
+          - es-ar
+          - es-co
+          - es-mx
+          - es-ni
+          - es-ve
+          - et
+          - eu
+          - fa
+          - fi
+          - fr
+          - fy
+          - ga
+          - gd
+          - gl
+          - he
+          - hi
+          - hr
+          - hsb
+          - hu
+          - hy
+          - ia
+          - id
+          - ig
+          - io
+          - is
+          - it
+          - ja
+          - ka
+          - kab
+          - kk
+          - km
+          - kn
+          - ko
+          - ky
+          - lb
+          - lt
+          - lv
+          - mk
+          - ml
+          - mn
+          - mr
+          - ms
+          - my
+          - nb
+          - ne
+          - nl
+          - nn
+          - os
+          - pa
+          - pl
+          - pt
+          - pt-br
+          - ro
+          - ru
+          - sk
+          - sl
+          - sq
+          - sr
+          - sr-latn
+          - sv
+          - sw
+          - ta
+          - te
+          - tg
+          - th
+          - tk
+          - tr
+          - tt
+          - udm
+          - ug
+          - uk
+          - ur
+          - uz
+          - vi
+          - zh-hans
+          - zh-hant
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/vnd.oai.openapi:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/yaml:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/vnd.oai.openapi+json:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /dash/:
+    get:
+      operationId: dash_list
+      tags:
+      - dash
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Shift'
+          description: ''
+    post:
+      operationId: dash_create
+      tags:
+      - dash
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Shift'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Shift'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Shift'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Shift'
+          description: ''
+  /dash/{id}/:
+    get:
+      operationId: dash_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this shift.
+        required: true
+      tags:
+      - dash
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Shift'
+          description: ''
+    put:
+      operationId: dash_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this shift.
+        required: true
+      tags:
+      - dash
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Shift'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Shift'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Shift'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Shift'
+          description: ''
+    patch:
+      operationId: dash_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this shift.
+        required: true
+      tags:
+      - dash
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedShift'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedShift'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedShift'
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Shift'
+          description: ''
+    delete:
+      operationId: dash_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this shift.
+        required: true
+      tags:
+      - dash
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '204':
+          description: No response body
+  /login/:
+    post:
+      operationId: login_create
+      tags:
+      - login
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /signup/:
+    get:
+      operationId: signup_list
+      tags:
+      - signup
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CreateCompany'
+          description: ''
+    post:
+      operationId: signup_create
+      tags:
+      - signup
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCompany'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CreateCompany'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CreateCompany'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateCompany'
+          description: ''
+  /team/:
+    get:
+      operationId: team_list
+      tags:
+      - team
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Employee'
+          description: ''
+  /team/employees/:
+    get:
+      operationId: team_employees_list
+      tags:
+      - team
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Employee'
+          description: ''
+    post:
+      operationId: team_employees_create
+      tags:
+      - team
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Employee'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Employee'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Employee'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Employee'
+          description: ''
+  /team/employees/{id}/:
+    get:
+      operationId: team_employees_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - team
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Employee'
+          description: ''
+    put:
+      operationId: team_employees_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - team
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Employee'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Employee'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Employee'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Employee'
+          description: ''
+    patch:
+      operationId: team_employees_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - team
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedEmployee'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedEmployee'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedEmployee'
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Employee'
+          description: ''
+    delete:
+      operationId: team_employees_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - team
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '204':
+          description: No response body
+  /team/positions/:
+    get:
+      operationId: team_positions_list
+      tags:
+      - team
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Position'
+          description: ''
+    post:
+      operationId: team_positions_create
+      tags:
+      - team
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Position'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Position'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Position'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Position'
+          description: ''
+  /team/positions/{id}/:
+    get:
+      operationId: team_positions_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - team
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Position'
+          description: ''
+    put:
+      operationId: team_positions_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - team
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Position'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Position'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Position'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Position'
+          description: ''
+    patch:
+      operationId: team_positions_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - team
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedPosition'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedPosition'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedPosition'
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Position'
+          description: ''
+    delete:
+      operationId: team_positions_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - team
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '204':
+          description: No response body
+components:
+  schemas:
+    CreateCompany:
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 100
+        manager_name:
+          type: string
+          maxLength: 100
+        manager_username:
+          type: string
+          maxLength: 20
+        manager_password:
+          type: string
+          default: ''
+          maxLength: 20
+      required:
+      - manager_name
+      - manager_username
+      - name
+    Employee:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 100
+        contact:
+          type: string
+          format: email
+          maxLength: 100
+        position:
+          allOf:
+          - $ref: '#/components/schemas/Position'
+          readOnly: true
+        position_id:
+          type: integer
+          writeOnly: true
+        company:
+          type: integer
+          readOnly: true
+      required:
+      - company
+      - id
+      - name
+      - position
+      - position_id
+    PatchedEmployee:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 100
+        contact:
+          type: string
+          format: email
+          maxLength: 100
+        position:
+          allOf:
+          - $ref: '#/components/schemas/Position'
+          readOnly: true
+        position_id:
+          type: integer
+          writeOnly: true
+        company:
+          type: integer
+          readOnly: true
+    PatchedPosition:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          maxLength: 100
+        company:
+          type: integer
+    PatchedShift:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        duration:
+          type: string
+        starttime:
+          type: string
+          format: date-time
+        status:
+          $ref: '#/components/schemas/StatusEnum'
+        recurring:
+          type: boolean
+        employee:
+          type: integer
+          nullable: true
+        position:
+          type: integer
+    Position:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          maxLength: 100
+        company:
+          type: integer
+      required:
+      - company
+      - id
+      - title
+    Shift:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        duration:
+          type: string
+        starttime:
+          type: string
+          format: date-time
+        status:
+          $ref: '#/components/schemas/StatusEnum'
+        recurring:
+          type: boolean
+        employee:
+          type: integer
+          nullable: true
+        position:
+          type: integer
+      required:
+      - duration
+      - id
+      - position
+      - starttime
+    StatusEnum:
+      enum:
+      - prop
+      - acc
+      - pref
+      - rej
+      type: string
+      description: |-
+        * `prop` - Proposed
+        * `acc` - Accepted
+        * `pref` - Preferred
+        * `rej` - Rejected
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: sessionid

@@ -3,6 +3,7 @@ from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from .views import ShiftViewSet, PositionsCreateView, PositionsDetailView, EmployeesCreateView, EmployeesDetailView, TeamListView, NewCompanyCreateView
 from .views import login_view, PositionsListCreateView, EmployeesListCreateView
+from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
 
 # Create a router and register our ViewSets with it.
 router = DefaultRouter()
@@ -23,4 +24,10 @@ urlpatterns = [
     path('team/', TeamListView.as_view(), name='team'),
     path('signup/', NewCompanyCreateView.as_view(), name='team'),
     path('login/', login_view),
+
+        # YOUR PATTERNS
+    path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
+    # Optional UI:
+    path('api/schema/swagger-ui/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
+    path('api/schema/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
 ]
