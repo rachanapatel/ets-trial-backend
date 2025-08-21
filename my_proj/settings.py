@@ -70,12 +70,31 @@ MIDDLEWARE = [
 #      "https://capstone-frontend-gold.vercel.app/"
 # ]
 
+
+
+
+
+ENVIRONMENT = config('DJANGO_ENV', default='development')
+
+if ENVIRONMENT == 'production':
+    CORS_ALLOWED_ORIGINS = [
+     "https://capstone-frontend-gold.vercel.app"
+     ]
+
+else:
+    CORS_ALLOWED_ORIGINS = [
+     "http://localhost:5173/capstone-frontend",
+     ]
+
+
+
+
 from corsheaders.defaults import default_headers
 CORS_ALLOW_HEADERS = list(default_headers) + [
     'x-company-id',
 ]
 
-CORS_ALLOW_ALL_ORIGINS = True
+# CORS_ALLOW_ALL_ORIGINS = True
 
 ROOT_URLCONF = 'my_proj.urls'
 
