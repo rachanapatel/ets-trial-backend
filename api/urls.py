@@ -25,7 +25,7 @@ urlpatterns = [
     path('signup/', NewCompanyCreateView.as_view(), name='team'),
     path('login/', login_view),
 
-        # YOUR PATTERNS
+        # documentation
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
     # Optional UI:
     path('api/schema/swagger-ui/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),

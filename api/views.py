@@ -113,36 +113,39 @@ class NewCompanyCreateView(generics.CreateAPIView, generics.ListAPIView):
                          "position": third_response_serializer.data},
                          status=201)
     
-@api_view(['POST'])
+@api_view(['POST', 'GET'])
 def login_view(request):
-    username = request.data.get('username')
-    password = request.data.get('password')
+    if request.method == 'POST':
+        username = request.data.get('username')
+        password = request.data.get('password')
 
-    print(f"Login attempt: {username=} {password=}")
+        print(f"Login attempt: {username=} {password=}")
 
-    if not username or not password:
-        return Response({"detail": "Username and password are required."}, status=400)
+        if not username or not password:
+            return Response({"detail": "Username and password are required."}, status=400)
 
-    try:
-        user = Employee.objects.get(username=username)
-        print(f"Found user: {user.username=} {user.password=}")
+        try:
+            user = Employee.objects.get(username=username)
+            print(f"Found user: {user.username=} {user.password=}")
 
 
-        if user.password == password:  
-            position_title = user.position.title  
-            serializer = ReadManagerSerializer(user)
-            return Response({
-                **serializer.data,
-                "is_manager": position_title == "Manager",  
-                "position": position_title 
-            }, status=200)
+            if user.password == password:  
+                position_title = user.position.title  
+                serializer = ReadManagerSerializer(user)
+                return Response({
+                    **serializer.data,
+                    "is_manager": position_title == "Manager",  
+                    "position": position_title 
+                }, status=200)
 
-        return Response({"detail": "Incorrect password."}, status=401)
+            return Response({"detail": "Incorrect password."}, status=401)
 
-    except Employee.DoesNotExist:
-        return Response({"detail": "User not found."}, status=401)
+        except Employee.DoesNotExist:
+            return Response({"detail": "User not found."}, status=401)
+        
+        except Exception as e:
+            print("Unexpected error:", str(e))
+            return Response({"detail": "Server error"}, status=500)
     
-    except Exception as e:
-        print("Unexpected error:", str(e))
-        return Response({"detail": "Server error"}, status=500)
-     
+    elif request.method == 'GET':
+        return Response({"message": "Please provide your credentials to login."}, status=status.HTTP_200_OK)
